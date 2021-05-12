@@ -234,6 +234,11 @@ void MainWindow::on_action_Open_triggered()
         return ;
     }
 
+    if(file.atEnd()){
+        QMessageBox::warning(this, "Warning", "File \"" + filename + "\" is empty");
+        return ;
+    }
+
     this->Students.clear();
 
     while(!file.atEnd()){
