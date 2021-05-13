@@ -33,6 +33,8 @@ private slots:
 
     void on_pushButton_edit_save_clicked();
 
+    void on_pushButton_edit_delete_clicked();
+
 private:
     Ui::MainWindow *ui;
     QList<Student> Students;

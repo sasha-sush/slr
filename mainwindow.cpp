@@ -139,6 +139,7 @@ void MainWindow::refresh_edit_content()
         ui->lineEdit_edit_name->setEnabled(false);
         ui->lineEdit_edit_surname->setEnabled(false);
         ui->dateEdit_edit_date->setEnabled(false);
+        ui->pushButton_edit_delete->setEnabled(false);
         ui->spinBox_edit_mark_1->setEnabled(false);
         ui->spinBox_edit_mark_2->setEnabled(false);
         ui->spinBox_edit_mark_3->setEnabled(false);
@@ -148,6 +149,7 @@ void MainWindow::refresh_edit_content()
         ui->lineEdit_edit_name->setEnabled(true);
         ui->lineEdit_edit_surname->setEnabled(true);
         ui->dateEdit_edit_date->setEnabled(true);
+        ui->pushButton_edit_delete->setEnabled(true);
         ui->spinBox_edit_mark_1->setEnabled(true);
         ui->spinBox_edit_mark_2->setEnabled(true);
         ui->spinBox_edit_mark_3->setEnabled(true);
@@ -223,11 +225,16 @@ void MainWindow::sort()
 void MainWindow::on_action_Open_triggered()
 {
     QString filename = QFileDialog::getOpenFileName(this, "", "", "*.txt");
+    if(filename == ""){
+        return ;
+    }
+
     QFile file(filename);
     int line_count = 0;
 
     int err_count = 0;
     QString err_msges;
+
 
     if (!file.open(QIODevice::ReadOnly)){
         QMessageBox::critical(this, "Error", "Could not open file \"" + filename + "\"");
@@ -268,6 +275,7 @@ void MainWindow::on_action_Open_triggered()
             this->Students.push_back(tmpstudent);
         } else{
             ++err_count;
+            line.chop(1);
             err_msges += "Wrong format on line " + QString::number(line_count) + "\n\"" + line + "\"\n";
         }
     }
@@ -285,6 +293,9 @@ void MainWindow::on_action_Open_triggered()
 void MainWindow::on_action_Save_triggered()
 {
     QString filename = QFileDialog::getSaveFileName(this, "", "", "*.txt");
+    if(filename == ""){
+        return ;
+    }
     QFile file(filename);
 
     if(!file.open(QIODevice::WriteOnly)){
@@ -354,4 +365,19 @@ void MainWindow::on_pushButton_edit_save_clicked()
     *it = new_student;
 
     refresh_table();
+}
+
+void MainWindow::on_pushButton_edit_delete_clicked()
+{
+    auto it = this->Students.begin();
+    int index = ui->spinBox_edit_student->value() - 1;
+    it += index;
+
+    QString containment = "Are you sure to delete " + QString::number(index+1) + " student?\n" + it->toQString();
+    auto answer = QMessageBox::question(this, "Deleting", containment);
+
+    if (answer == QMessageBox::StandardButton::Yes) {
+        this->Students.erase(it);
+        refresh_table();
+    }
 }
